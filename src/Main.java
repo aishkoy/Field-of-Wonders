@@ -5,18 +5,15 @@ import java.util.Scanner;
 public class Main {
     public static void main(String[] args) {
 
-        PlayerManager.getPlayersAndDisplay();
-        getRandomInt();
-        System.out.println(getWordForRound(getRandomInt()));
-        System.out.println(getRiddleForRound(getRandomInt()));
+        PlayerManager.getPlayers();
+        showDecoration();
+        int randIndex = getRandomInt();
+        System.out.println(getRiddleForRound(randIndex));
+        showGuessedWord(getWordForRound(randIndex));
     }
 
-
-
-
-
     public static class PlayerManager {
-        public static void getPlayersAndDisplay() {
+        public static void getPlayers() {
             Scanner sc = new Scanner(System.in);
             System.out.print("Введите количество игроков: ");
             int numPlayers = sc.nextInt();
@@ -26,10 +23,11 @@ public class Main {
             for (int i = 0; i < numPlayers; i++) {
                 System.out.printf("Игрок №%d, введите имя: ", (i + 1));
                 players[i] = sc.nextLine();
+                while(players[i].isBlank()){
+                    System.out.print("Вы не ввели имя! Попробуйте еще раз: ");
+                    players[i] = sc.nextLine();
+                }
             }
-
-            System.out.println("Имена игроков:");
-            System.out.println(Arrays.toString(players));
         }
     }
 
@@ -37,7 +35,6 @@ public class Main {
         Random rand = new Random();
         return rand.nextInt(10);
     }
-
 
     public static String getWordForRound(int randWord){
         String[] words = {"Компас", "Мираж", "Сфинкс", "Рубин", "Барометр", "Оазис", "Альбатрос", "Ковчег", "Лабиринт", "Парус"};
@@ -55,6 +52,30 @@ public class Main {
                 "Судно, что несло спасение всем, кто был на борту.",
                 "Ходы и выходы запутаны, и один из них ведет к спасению.",
                 "Он гонит корабль вперёд, но сам неподвижен."};
-        return wordRiddles[randWord];
+        return "Загадка: " + wordRiddles[randWord];
+    }
+
+    public static void showDecoration(){
+        for(int i = 0; i < 31; i++){
+            System.out.print("===");
+        }
+        System.out.println();
+        for(int i = 0; i < 35; i++){
+            System.out.print(" ");
+        }
+        System.out.println("ИГРА 'ПОЛЕ ЧУДЕС'");
+        for(int i = 0; i < 31; i++){
+            System.out.print("===");
+        }
+        System.out.println();
+    }
+
+    public static void showGuessedWord(String getWordForRound){
+        String[] guessedWord = new String[getWordForRound.length()];
+        Arrays.fill(guessedWord, "[ ]");
+        for (String s : guessedWord) {
+            System.out.print(s + " ");
+        }
+        System.out.println();
     }
 }
