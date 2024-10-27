@@ -5,26 +5,39 @@ import java.util.Scanner;
 public class Main {
     public static void main(String[] args) {
 
-        Scanner sc = new Scanner(System.in);
-
-        System.out.print("Ведите количество игроков: ");
-        int numPlayers = sc.nextInt();
-        sc.nextLine();
-
-        String[] players = new String[numPlayers];
-        for (int i = 0; i < numPlayers; i++) {
-            System.out.printf("Игрок №%d введите имя: ", (i + 1));
-            players[i] = sc.next();
-        }
-
-        System.out.println(Arrays.toString(players));
-
-        Random rand = new Random();
-        int randWord = rand.nextInt(10);
-
-        System.out.println(getWordForRound(randWord));
-        System.out.println(getRiddleForRound(randWord));
+        PlayerManager.getPlayersAndDisplay();
+        getRandomInt();
+        System.out.println(getWordForRound(getRandomInt()));
+        System.out.println(getRiddleForRound(getRandomInt()));
     }
+
+
+
+
+
+    public static class PlayerManager {
+        public static void getPlayersAndDisplay() {
+            Scanner sc = new Scanner(System.in);
+            System.out.print("Введите количество игроков: ");
+            int numPlayers = sc.nextInt();
+            sc.nextLine();
+
+            String[] players = new String[numPlayers];
+            for (int i = 0; i < numPlayers; i++) {
+                System.out.printf("Игрок №%d, введите имя: ", (i + 1));
+                players[i] = sc.nextLine();
+            }
+
+            System.out.println("Имена игроков:");
+            System.out.println(Arrays.toString(players));
+        }
+    }
+
+    public static int getRandomInt(){
+        Random rand = new Random();
+        return rand.nextInt(10);
+    }
+
 
     public static String getWordForRound(int randWord){
         String[] words = {"Компас", "Мираж", "Сфинкс", "Рубин", "Барометр", "Оазис", "Альбатрос", "Ковчег", "Лабиринт", "Парус"};
