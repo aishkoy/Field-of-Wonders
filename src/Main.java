@@ -4,16 +4,17 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-
-        PlayerManager.getPlayers();
+        String[] players = PlayerManager.getPlayers();
         showDecoration();
+
         int randIndex = getRandomInt();
         System.out.println(getRiddleForRound(randIndex));
         showGuessedWord(getWordForRound(randIndex));
+        getPlayerInput(players);
     }
 
     public static class PlayerManager {
-        public static void getPlayers() {
+        public static String[] getPlayers() {
             Scanner sc = new Scanner(System.in);
             System.out.print("Введите количество игроков: ");
             int numPlayers = sc.nextInt();
@@ -28,6 +29,7 @@ public class Main {
                     players[i] = sc.nextLine();
                 }
             }
+            return players;
         }
     }
 
@@ -73,9 +75,27 @@ public class Main {
     public static void showGuessedWord(String getWordForRound){
         String[] guessedWord = new String[getWordForRound.length()];
         Arrays.fill(guessedWord, "[ ]");
+        System.out.print("Слово:   ");
         for (String s : guessedWord) {
             System.out.print(s + " ");
         }
         System.out.println();
+    }
+
+    public static String getPlayerInput(String[] players){
+        Scanner scanner = new Scanner(System.in);
+
+        String input = "";
+        for (String player : players) {
+            System.out.printf("Игрок %s, введите букву или слово: ", player);
+            input = scanner.nextLine().trim().toLowerCase();
+        }
+        return input;
+    }
+
+    public static boolean areWordsEqual(String getPlayerInput, String getWordForRound){
+        char[] word = getWordForRound.toCharArray();
+        char[] playerInput = getPlayerInput.toCharArray();
+        return Arrays.equals(word, playerInput);
     }
 }
