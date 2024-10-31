@@ -4,8 +4,9 @@ import java.util.Scanner;
 import java.util.stream.Stream;
 
 public class Main {
+    public static final Scanner scanner = new Scanner(System.in);
+
     public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
 
         int randIndex = getRandomInt();
         String word = getWordForRound(randIndex);
@@ -21,12 +22,10 @@ public class Main {
         int maxScore = 0;
         String playerGetMaxPoints = "";
 
-
         showDecoration();
         Player[] players = PlayerManager.getPlayers();
         System.out.println();
-        cleanScreen();
-        showGameInfo(randIndex, String.valueOf(inputLetters), guessedWord);
+        showGameInfo(randIndex, inputLetters.toString(), guessedWord);
 
         boolean isGameWon = false;
         while (!isGameWon) {
@@ -35,26 +34,21 @@ public class Main {
                 boolean hasExtraTurn = false;
                 do {
                     System.out.printf("\nИгрок %s, введите букву или слово: ", player.getName());
-                    String playerInput = getValidInput(randIndex, guessedWord, inputLetters, player);
+                    String playerInput = getValidInput(randIndex, guessedWord, inputLetters, player, guessedLetters);
 
-                    if (isLetterGuessed(guessedLetters.toString(), playerInput)) {
-                        cleanScreen();
-                        showGameInfo(randIndex, String.valueOf(inputLetters), guessedWord);
-                        System.out.println("\nЭта буква уже была введена, введите другую.");
+                    if (playerInput.isBlank()) {
                         continue;
                     }
 
                     if (playerInput.length() > 1) {
                         if (playerInput.equalsIgnoreCase(word)) {
-                            cleanScreen();
-                            showGameInfo(randIndex, String.valueOf(inputLetters), guessedWord);
+                            showGameInfo(randIndex, inputLetters.toString(), guessedWord);
                             System.out.printf("Игрок %s победил!", player.getName());
                             player.incrementWins();
                             isGameWon = true;
                             break;
                         } else {
-                            cleanScreen();
-                            showGameInfo(randIndex, String.valueOf(inputLetters), guessedWord);
+                            showGameInfo(randIndex, inputLetters.toString(), guessedWord);
                             System.out.printf("Игрок %s ввел неверное слово!", player.getName());
                             hasExtraTurn = false;
                         }
@@ -70,14 +64,14 @@ public class Main {
                             }
                         }
 
-                        cleanScreen();
+
                         if (isLetterFound) {
                             guessedLetters.append(playerInput);
                             player.incrementPoints();
-                            showGameInfo(randIndex, String.valueOf(inputLetters), guessedWord);
+                            showGameInfo(randIndex, inputLetters.toString(), guessedWord);
                             System.out.println("Такая буква есть!");
                         } else {
-                            showGameInfo(randIndex, String.valueOf(inputLetters), guessedWord);
+                            showGameInfo(randIndex, inputLetters.toString(), guessedWord);
                             System.out.println("Такой буквы нет...");
                             hasExtraTurn = false;
                         }
@@ -85,7 +79,6 @@ public class Main {
                     }
 
                     if (Arrays.equals(guessedWord, wordLetters)) {
-                        cleanScreen();
                         showDecoration();
                         System.out.printf("\nИгрок %s нашел слово!", player.getName());
                         player.incrementWins();
@@ -93,7 +86,7 @@ public class Main {
                         break;
                     }
 
-                    if (player.getPoints() == 600) {
+                    if (player.getPoints() == 600 && players.length > 1) {
                         playerGetMaxPoints = player.getName();
                         maxScore = player.getPoints();
                         break AnyOneGet600;
@@ -105,8 +98,7 @@ public class Main {
             }
 
             if(!isGameWon && maxScore == 600){
-                cleanScreen();
-                showGameInfo(randIndex, String.valueOf(inputLetters), guessedWord);
+                showGameInfo(randIndex, inputLetters.toString(), guessedWord);
                 System.out.printf("\nИгрок %s набрал %d очков, что является наивысшим результатом в этой игре. \nТеперь, другие игроки могут попытаться угадать слово. Если игрок назовет слово неправильно, он проиграет. \nЕсли же кто-то назовет слово правильно, то он станет победителем! \nА если никто не угадает, то победителем является %s!", playerGetMaxPoints, maxScore, playerGetMaxPoints);
                 for(Player player : players){
                     if(player.getPoints() == maxScore){
@@ -116,12 +108,10 @@ public class Main {
                     String playerInput = scanner.nextLine().strip().toLowerCase();
 
                     if(playerInput.isBlank() || !playerInput.equalsIgnoreCase(word)){
-                        cleanScreen();
-                        showGameInfo(randIndex, String.valueOf(inputLetters), guessedWord);
+                        showDecoration();
                         System.out.println("К сожалению, это неправильное слово.");
 
                     } else {
-                        cleanScreen();
                         showDecoration();
                         System.out.printf("Слово угадано верно!! Игрок %s победил!", player.getName());
                         player.incrementWins();
@@ -131,7 +121,7 @@ public class Main {
                 }
 
                 if(!isGameWon){
-                    System.out.printf("Так как никто не угадал слово. Игрок %s становится победителем. Поздравляем!", playerGetMaxPoints);
+                    System.out.printf("\nТак как никто не угадал слово. Игрок %s становится победителем. Поздравляем!", playerGetMaxPoints);
                     for(Player player : players){
                         if(player.getPoints() == maxScore){
                             player.incrementWins();
@@ -150,13 +140,12 @@ public class Main {
     public static class PlayerManager {
 
         public static Player[] getPlayers() {
-            Scanner sc = new Scanner(System.in);
             int numPlayers = 0;
 
             boolean validInput = false;
             while (!validInput) {
                 System.out.print("Введите количество игроков: ");
-                String numPlayersStr = sc.nextLine().strip();
+                String numPlayersStr = scanner.nextLine().strip();
 
                 if (numPlayersStr.matches("^[1-9]\\d*$")) {
                     numPlayers = Integer.parseInt(numPlayersStr);
@@ -169,10 +158,10 @@ public class Main {
             Player[] players = new Player[numPlayers];
             for (int i = 0; i < numPlayers; i++) {
                 System.out.printf("Игрок №%d, введите имя: ", (i + 1));
-                String name = sc.nextLine();
+                String name = scanner.nextLine();
                 while (name.isBlank()) {
                     System.out.print("Вы не ввели имя! Попробуйте еще раз: ");
-                    name = sc.nextLine();
+                    name = scanner.nextLine();
                 }
                 players[i] = new Player(name);
             }
@@ -261,6 +250,7 @@ public class Main {
     }
 
     public static void showDecoration(){
+        cleanScreen();
         System.out.println();
         for(int i = 0; i < 31; i++){
             System.out.print("===");
@@ -283,7 +273,7 @@ public class Main {
         }
     }
 
-    public static boolean isLetterGuessed(String guessedLetters, String playerInput) {
+    public static boolean isLetterEntered(String guessedLetters, String playerInput) {
         return guessedLetters.contains(playerInput);
     }
 
@@ -306,12 +296,13 @@ public class Main {
     }
 
     public static void cleanScreen() {
-        for (int i = 0; i < 30; i++) {
+        for (int i = 0; i < 10; i++) {
             System.out.println();
         }
     }
 
     public static void showGameInfo(int randIndex, String inputLetters, String[] guessedWord) {
+        cleanScreen();
         showDecoration();
         System.out.println(getRiddleForRound(randIndex));
         showRemainingLetters(String.valueOf(inputLetters));
@@ -319,17 +310,20 @@ public class Main {
         System.out.println("\n");
     }
 
-    public static String getValidInput(int randIndex, String[] guessedWord, StringBuilder inputLetters, Player player) {
-        Scanner scanner = new Scanner(System.in);
+    public static String getValidInput(int randIndex, String[] guessedWord, StringBuilder inputLetters, Player player, StringBuilder guessedLetters) {
         String playerInput = scanner.nextLine().strip().toLowerCase();
 
         while (playerInput.isBlank() || !playerInput.matches("[а-яА-ЯёЁ]+")) {
-            cleanScreen();
-            showGameInfo(randIndex, String.valueOf(inputLetters), guessedWord);
+            showGameInfo(randIndex, inputLetters.toString(), guessedWord);
             System.out.printf("\nНеверный ввод. Игрок %s, попробуйте еще раз: ", player.getName());
             playerInput = scanner.nextLine().strip().toLowerCase();
         }
 
+        if (isLetterEntered(guessedLetters.toString(), playerInput)) {
+            showGameInfo(randIndex, inputLetters.toString(), guessedWord);
+            System.out.println("\nЭта буква уже была введена, введите другую.");
+            return "";
+        }
         return playerInput;
     }
 }
