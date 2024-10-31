@@ -56,6 +56,7 @@ public class Main {
                         } else {
                             System.out.printf("Игрок %s ввел неверное слово!", player.getName());
                             showGuessProgress(guessedWord);
+                            hasExtraTurn = false;
                         }
 
                     } else {
@@ -91,22 +92,10 @@ public class Main {
 
                 if (isGameWon) break;
             }
-
         }
+
+        displayLeaderboard(players, isGameWon);
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     public static class PlayerManager {
@@ -151,24 +140,41 @@ public class Main {
             return wins;
         }
 
-        public int getLosses() {
-            return losses;
-        }
 
         public int getPoints() {
             return points;
         }
 
         public void incrementPoints() {
-            points+=100;
+            points += 100;
         }
 
         public void incrementWins() {
             wins++;
         }
+    }
 
-        public void incrementLosses() {
-            losses++;
+    public static void sortPlayersByWins(Player[] players) {
+        int n = players.length;
+        for (int i = 0; i < n - 1; i++) {
+            for (int j = 0; j < n - i - 1; j++) {
+                if (players[j].getWins() < players[j + 1].getWins()) {
+                    Player temp = players[j];
+                    players[j] = players[j + 1];
+                    players[j + 1] = temp;
+                }
+            }
+        }
+    }
+
+    public static void displayLeaderboard(Player[] players, boolean isGameWon) {
+        sortPlayersByWins(players);
+
+        System.out.println("\nТаблица лидеров:");
+        for (Player player : players) {
+
+                System.out.println(player.getName() + " - Победы: " + player.getWins() + ", Очки: " + player.getPoints());
+
         }
     }
 
