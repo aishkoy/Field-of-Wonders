@@ -148,11 +148,23 @@ public class Main {
     }
 
     public static class PlayerManager {
+
         public static Player[] getPlayers() {
             Scanner sc = new Scanner(System.in);
-            System.out.print("Введите количество игроков: ");
-            int numPlayers = sc.nextInt();
-            sc.nextLine();
+            int numPlayers = 0;
+
+            boolean validInput = false;
+            while (!validInput) {
+                System.out.print("Введите количество игроков: ");
+                String numPlayersStr = sc.nextLine().strip();
+
+                if (numPlayersStr.matches("^[1-9]\\d*$")) {
+                    numPlayers = Integer.parseInt(numPlayersStr);
+                    validInput = true;
+                } else {
+                    System.out.println("Ошибка: Введите положительное целое число.");
+                }
+            }
 
             Player[] players = new Player[numPlayers];
             for (int i = 0; i < numPlayers; i++) {
