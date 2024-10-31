@@ -64,7 +64,7 @@ public class Main {
                             }
                         }
 
-
+                        inputLetters.append(playerInput);
                         if (isLetterFound) {
                             guessedLetters.append(playerInput);
                             player.incrementPoints();
@@ -75,7 +75,7 @@ public class Main {
                             System.out.println("Такой буквы нет...");
                             hasExtraTurn = false;
                         }
-                        inputLetters.append(playerInput);
+
                     }
 
                     if (Arrays.equals(guessedWord, wordLetters)) {
@@ -132,9 +132,7 @@ public class Main {
             }
         }
 
-        System.out.println("\nУгадываемое слово: " + word);
-        System.out.println("\nСпасибо вам за игру! До свиданья!");
-        displayLeaderboard(players);
+        endGame(word, players);
     }
 
     public static class PlayerManager {
@@ -311,19 +309,28 @@ public class Main {
     }
 
     public static String getValidInput(int randIndex, String[] guessedWord, StringBuilder inputLetters, Player player, StringBuilder guessedLetters) {
-        String playerInput = scanner.nextLine().strip().toLowerCase();
-
-        while (playerInput.isBlank() || !playerInput.matches("[а-яА-ЯёЁ]+")) {
-            showGameInfo(randIndex, inputLetters.toString(), guessedWord);
-            System.out.printf("\nНеверный ввод. Игрок %s, попробуйте еще раз: ", player.getName());
+        String playerInput;
+        do{
             playerInput = scanner.nextLine().strip().toLowerCase();
-        }
+            if(!playerInput.matches("[а-яА-ЯёЁ]+") || playerInput.isBlank()){
+                showGameInfo(randIndex, inputLetters.toString(), guessedWord);
+                System.out.printf("\nНеверный ввод. Игрок %s, попробуйте еще раз: ", player.getName());
+                playerInput = "";
+            } else if (isLetterEntered(guessedLetters.toString(), playerInput)) {
+                showGameInfo(randIndex, inputLetters.toString(), guessedWord);
+                System.out.println("\nЭта буква уже была введена, введите другую.");
+                playerInput = "";
+            }
+        } while(playerInput.isBlank());
 
-        if (isLetterEntered(guessedLetters.toString(), playerInput)) {
-            showGameInfo(randIndex, inputLetters.toString(), guessedWord);
-            System.out.println("\nЭта буква уже была введена, введите другую.");
-            return "";
-        }
         return playerInput;
     }
+
+    public static void endGame(String word, Player[] players) {
+        showDecoration();
+        System.out.println("\nУгадываемое слово: " + word);
+        System.out.println("\nСпасибо вам за игру! До свиданья!");
+        displayLeaderboard(players);
+    }
+
 }
