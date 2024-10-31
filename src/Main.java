@@ -30,8 +30,10 @@ public class Main {
         boolean isGameWon = false;
         StringBuilder guessedLetters = new StringBuilder();
 
+
         while (!isGameWon) {
             for (Player player : players) {
+                showRemainingLetters(String.valueOf(guessedLetters));
                 boolean hasExtraTurn = false;
                 do {
                     System.out.printf("\nИгрок %s, введите букву или слово: ", player.getName());
@@ -43,7 +45,7 @@ public class Main {
                     }
 
                     if (isLetterGuessed(guessedLetters.toString(), playerInput)) {
-                        System.out.printf("\nЭта буква уже была введена, введите другую.", player.getName());
+                        System.out.println("\nЭта буква уже была введена, введите другую.");
                         continue;
                     }
 
@@ -94,7 +96,7 @@ public class Main {
             }
         }
 
-        displayLeaderboard(players, isGameWon);
+        displayLeaderboard(players);
     }
 
 
@@ -119,16 +121,14 @@ public class Main {
         }
     }
 
-    static class Player {
-        private String name;
+    public static class Player {
+        private final String name;
         private int wins;
-        private int losses;
         private int points;
 
         public Player(String name) {
             this.name = name;
             this.wins = 0;
-            this.losses = 0;
             this.points = 0;
         }
 
@@ -167,14 +167,11 @@ public class Main {
         }
     }
 
-    public static void displayLeaderboard(Player[] players, boolean isGameWon) {
+    public static void displayLeaderboard(Player[] players) {
         sortPlayersByWins(players);
-
         System.out.println("\nТаблица лидеров:");
         for (Player player : players) {
-
-                System.out.println(player.getName() + " - Победы: " + player.getWins() + ", Очки: " + player.getPoints());
-
+            System.out.println(player.getName() + " - Победы: " + player.getWins() + ", Очки: " + player.getPoints());
         }
     }
 
@@ -227,4 +224,22 @@ public class Main {
     public static boolean isLetterGuessed(String guessedLetters, String playerInput) {
         return guessedLetters.contains(playerInput);
     }
+
+    public static void showRemainingLetters(String guessedLetters) {
+        String[] allLetters = {
+                "а", "б", "в", "г", "д", "е", "ё", "ж", "з", "и",
+                "й", "к", "л", "м", "н", "о", "п", "р", "с", "т",
+                "у", "ф", "х", "ц", "ч", "ш", "щ", "ъ", "ы", "ь",
+                "э", "ю", "я"
+        };
+        String[] remainingLetters = Arrays.stream(allLetters)
+                .filter(letter -> !guessedLetters.contains(letter))
+                .toArray(String[]::new);
+
+        System.out.print("\nОставшиеся буквы: ");
+        for(String letter : remainingLetters) {
+            System.out.print(letter + " ");
+        }
+    }
+
 }
