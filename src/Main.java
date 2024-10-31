@@ -34,29 +34,27 @@ public class Main {
             for (Player player : players) {
                 boolean hasExtraTurn = false;
                 do {
-                    System.out.printf("\nИгрок %s, введите букву или слово: ", player);
+                    System.out.printf("\nИгрок %s, введите букву или слово: ", player.getName());
                     String playerInput = scanner.nextLine().strip().toLowerCase();
 
                     while (playerInput.isBlank()) {
-                        System.out.printf("\nНеверный ввод. Игрок %s, попробуйте еще раз: ", player);
+                        System.out.printf("\nНеверный ввод. Игрок %s, попробуйте еще раз: ", player.getName());
                         playerInput = scanner.nextLine().strip().toLowerCase();
                     }
 
-                    boolean hasLetterEarlier = guessedLetters.toString().contains(playerInput);
-
-                    while (playerInput.length() == 1 && hasLetterEarlier) {
-                        System.out.printf("\nЭта буква уже была введена. Игрок %s, попробуйте еще раз: ", player);
-                        playerInput = scanner.nextLine().strip().toLowerCase();
-                        hasLetterEarlier = guessedLetters.toString().contains(playerInput);
+                    if (isLetterGuessed(guessedLetters.toString(), playerInput)) {
+                        System.out.printf("\nЭта буква уже была введена, введите другую.", player.getName());
+                        continue;
                     }
 
                     if (playerInput.length() > 1) {
                         if (playerInput.equalsIgnoreCase(word)) {
-                            System.out.printf("Игрок %s победил!", player);
+                            System.out.printf("Игрок %s победил!", player.getName());
+                            player.incrementWins();
                             isGameWon = true;
                             break;
                         } else {
-                            System.out.printf("Игрок %s ввел неверное слово!", player);
+                            System.out.printf("Игрок %s ввел неверное слово!", player.getName());
                             showGuessProgress(guessedWord);
                         }
 
@@ -73,6 +71,7 @@ public class Main {
 
                         if (isLetterFound) {
                             guessedLetters.append(playerInput);
+                            player.incrementPoints();
                             System.out.println("Такая буква есть!");
                         } else {
                             System.out.println("Такой буквы нет...");
@@ -83,7 +82,8 @@ public class Main {
                     }
 
                     if (Arrays.equals(guessedWord, wordLetters)) {
-                        System.out.printf("\nИгрок %s нашел слово!", player);
+                        System.out.printf("\nИгрок %s нашел слово!", player.getName());
+                        player.incrementWins();
                         isGameWon = true;
                         break;
                     }
@@ -216,5 +216,9 @@ public class Main {
         for (String letters : guessedWord) {
             System.out.printf("[%s]", letters);
         }
+    }
+
+    public static boolean isLetterGuessed(String guessedLetters, String playerInput) {
+        return guessedLetters.contains(playerInput);
     }
 }
