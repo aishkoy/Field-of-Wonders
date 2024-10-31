@@ -5,7 +5,8 @@ import java.util.Scanner;
 public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        String[] players = PlayerManager.getPlayers();
+
+        Player[] players = PlayerManager.getPlayers();
         showDecoration();
 
         int randIndex = getRandomInt();
@@ -30,7 +31,7 @@ public class Main {
         StringBuilder guessedLetters = new StringBuilder();
 
         while (!isGameWon) {
-            for (String player : players) {
+            for (Player player : players) {
                 boolean hasExtraTurn = false;
                 do {
                     System.out.printf("\nИгрок %s, введите букву или слово: ", player);
@@ -109,22 +110,65 @@ public class Main {
 
 
     public static class PlayerManager {
-        public static String[] getPlayers() {
+        public static Player[] getPlayers() {
             Scanner sc = new Scanner(System.in);
             System.out.print("Введите количество игроков: ");
             int numPlayers = sc.nextInt();
             sc.nextLine();
 
-            String[] players = new String[numPlayers];
+            Player[] players = new Player[numPlayers];
             for (int i = 0; i < numPlayers; i++) {
                 System.out.printf("Игрок №%d, введите имя: ", (i + 1));
-                players[i] = sc.nextLine();
-                while(players[i].isBlank()){
+                String name = sc.nextLine();
+                while (name.isBlank()) {
                     System.out.print("Вы не ввели имя! Попробуйте еще раз: ");
-                    players[i] = sc.nextLine();
+                    name = sc.nextLine();
                 }
+                players[i] = new Player(name);
             }
             return players;
+        }
+    }
+
+    static class Player {
+        private String name;
+        private int wins;
+        private int losses;
+        private int points;
+
+        public Player(String name) {
+            this.name = name;
+            this.wins = 0;
+            this.losses = 0;
+            this.points = 0;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public int getWins() {
+            return wins;
+        }
+
+        public int getLosses() {
+            return losses;
+        }
+
+        public int getPoints() {
+            return points;
+        }
+
+        public void incrementPoints() {
+            points+=100;
+        }
+
+        public void incrementWins() {
+            wins++;
+        }
+
+        public void incrementLosses() {
+            losses++;
         }
     }
 
