@@ -31,8 +31,10 @@ public class Main {
         StringBuilder guessedLetters = new StringBuilder();
         StringBuilder inputLetters = new StringBuilder();
 
-
+        int maxScore = 0;
+        String playerGetMaxPoints = "";
         while (!isGameWon) {
+            AnyOneGet600:
             for (Player player : players) {
                 showRemainingLetters(String.valueOf(inputLetters));
                 boolean hasExtraTurn = false;
@@ -92,12 +94,40 @@ public class Main {
                         isGameWon = true;
                         break;
                     }
+
+                    if (player.getPoints() == 600) {
+                        playerGetMaxPoints = player.getName();
+                        maxScore = player.getPoints();
+                        break AnyOneGet600;
+                    }
+
                 } while (hasExtraTurn);
 
                 if (isGameWon) break;
             }
+
+            if(!isGameWon && maxScore == 600){
+                System.out.printf("\nИгрок %s набрал %d очков, что является наивысшим результатом в этой игре. Теперь, другие игроки могут попытаться угадать слово. Если игрок назовет слово неправильно, он проиграет. Если же кто-то назовет слово правильно, то он станет победителем!", playerGetMaxPoints, maxScore);
+                for(Player player : players){
+                    if(player.getPoints() == maxScore){
+                        continue;
+                    }
+                    System.out.printf("\nИгрок %s попытайся угадать слово: ", player.getName());
+                    String playerInput = scanner.nextLine().strip().toLowerCase();
+
+                    if(playerInput.isBlank() || !playerInput.equalsIgnoreCase(word)){
+                        System.out.println("К сожалению, это неправильное слово. Очередь следующего игрока! ");
+                    } else {
+                        System.out.printf("Слово угадано верно!! Игрок %s победил!", player.getName());
+                        player.incrementWins();
+                        isGameWon = true;
+                        break;
+                    }
+                }
+            }
         }
 
+        System.out.println("\nСпасибо вам за игру! До свиданья!");
         displayLeaderboard(players);
     }
 
