@@ -28,6 +28,8 @@ class Game{
     public void start(){
         int maxScore = 0;
         String playerGetMaxPoints = "";
+        String playerWon = "";
+
         boolean isGameWon = false;
         showGameInfo(randIndex, inputLetters.toString(), guessedWord);
 
@@ -43,10 +45,10 @@ class Game{
                         continue;
                     }
 
-                    if (playerInput.length() > 1) {
+                    int letterLength = 1;
+                    if (playerInput.length() > letterLength) {
                         if (playerInput.equalsIgnoreCase(word)) {
-                            showGameInfo(randIndex, inputLetters.toString(), guessedWord);
-                            System.out.printf("Игрок %s победил!", player.getName());
+                            playerWon = player.getName();
                             player.incrementWins();
                             isGameWon = true;
                             break;
@@ -82,8 +84,7 @@ class Game{
                     }
 
                     if (Arrays.equals(guessedWord, wordLetters)) {
-                        showDecoration();
-                        System.out.printf("\nИгрок %s нашел слово!", player.getName());
+                        playerWon = player.getName();
                         player.incrementWins();
                         isGameWon = true;
                         break;
@@ -102,21 +103,24 @@ class Game{
 
             if(!isGameWon && maxScore == 600){
                 showGameInfo(randIndex, inputLetters.toString(), guessedWord);
-                System.out.printf("\nИгрок %s набрал %d очков, что является наивысшим результатом в этой игре. \nТеперь, другие игроки могут попытаться угадать слово. Если игрок назовет слово неправильно, он проиграет. \nЕсли же кто-то назовет слово правильно, то он станет победителем! \nА если никто не угадает, то победителем является %s!", playerGetMaxPoints, maxScore, playerGetMaxPoints);
+                System.out.printf("""
+                        Игрок %s набрал %d очков, что является наивысшим результатом в этой игре. \
+                        Теперь, другие игроки могут попытаться угадать слово. Если игрок назовет слово неправильно, он проиграет. \
+                        Если же кто-то назовет слово правильно, то он станет победителем! \
+                        А если никто не угадает, то победителем является %s!%n""", playerGetMaxPoints, maxScore, playerGetMaxPoints);
+
                 for(Player player : players){
                     if(player.getPoints() == maxScore){
                         continue;
                     }
-                    System.out.printf("\n\nИгрок %s попытайся угадать слово: ", player.getName());
+                    System.out.printf("\nИгрок %s, попытайся угадать слово: ", player.getName());
                     String playerInput = scanner.nextLine().strip().toLowerCase();
 
                     if(playerInput.isBlank() || !playerInput.equalsIgnoreCase(word)){
-                        showDecoration();
                         System.out.println("К сожалению, это неправильное слово.");
 
                     } else {
-                        showDecoration();
-                        System.out.printf("Слово угадано верно!! Игрок %s победил!", player.getName());
+                        playerWon = player.getName();
                         player.incrementWins();
                         isGameWon = true;
                         break;
@@ -124,18 +128,23 @@ class Game{
                 }
 
                 if(!isGameWon){
+                    showDecoration();
                     System.out.printf("\nТак как никто не угадал слово. Игрок %s становится победителем. Поздравляем!", playerGetMaxPoints);
                     for(Player player : players){
                         if(player.getPoints() == maxScore){
                             player.incrementWins();
+                            playerWon = player.getName();
                             isGameWon = true;
                         }
                     }
+                    System.out.println("\nУгадываемое слово: " + word);
+                    displayLeaderboard(players);
+                    System.out.println("\nСпасибо вам за игру! До свиданья!");
+                    System.exit(0);
                 }
             }
         }
-
-        endGame(word, players);
+        endGame(word, players, playerWon);
     }
 
 
@@ -245,8 +254,9 @@ class Game{
         return playerInput;
     }
 
-    public static void endGame(String word, Player[] players) {
+    public static void endGame(String word, Player[] players, String playerWon) {
         showDecoration();
+        System.out.printf("Слово угадано верно!! Игрок %s победил!", playerWon);
         System.out.println("\nУгадываемое слово: " + word);
         System.out.println("\nСпасибо вам за игру! До свиданья!");
         displayLeaderboard(players);

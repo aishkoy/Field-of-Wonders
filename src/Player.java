@@ -59,7 +59,7 @@ class PlayerManager {
             System.out.printf("Игрок №%d, введите имя: ", (i + 1));
             String name = scanner.nextLine();
             while (name.isBlank()) {
-                System.out.print("Вы не ввели имя! Попробуйте еще раз: ");
+                System.out.printf("Игрок №%d, Вы не ввели имя! Попробуйте еще раз: ", (i + 1));
                 name = scanner.nextLine();
             }
             players[i] = new Player(name);
