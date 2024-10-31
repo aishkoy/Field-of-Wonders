@@ -7,44 +7,35 @@ public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
 
-        Player[] players = PlayerManager.getPlayers();
         int randIndex = getRandomInt();
-
         String word = getWordForRound(randIndex);
-
-        String[] guessedWord = Stream.generate(() -> " ").limit(word.length()).toArray(String[]::new);
-
-        System.out.println();
-        cleanScreen();
-
         String[] wordLetters = new String[word.length()];
         for (int i = 0; i < word.length(); i++) {
             wordLetters[i] = String.valueOf(word.charAt(i));
         }
+        String[] guessedWord = Stream.generate(() -> " ").limit(word.length()).toArray(String[]::new);
 
-        boolean isGameWon = false;
         StringBuilder guessedLetters = new StringBuilder();
         StringBuilder inputLetters = new StringBuilder();
 
         int maxScore = 0;
         String playerGetMaxPoints = "";
 
+
+        showDecoration();
+        Player[] players = PlayerManager.getPlayers();
+        System.out.println();
+        cleanScreen();
+        showGameInfo(randIndex, String.valueOf(inputLetters), guessedWord);
+
+        boolean isGameWon = false;
         while (!isGameWon) {
             AnyOneGet600:
             for (Player player : players) {
-                showGameInfo(randIndex, String.valueOf(inputLetters), guessedWord);
-
                 boolean hasExtraTurn = false;
                 do {
                     System.out.printf("\nИгрок %s, введите букву или слово: ", player.getName());
-                    String playerInput = scanner.nextLine().strip().toLowerCase();
-
-                    while (playerInput.isBlank()) {
-                        cleanScreen();
-                        showGameInfo(randIndex, String.valueOf(inputLetters), guessedWord);
-                        System.out.printf("\nНеверный ввод. Игрок %s, попробуйте еще раз: ", player.getName());
-                        playerInput = scanner.nextLine().strip().toLowerCase();
-                    }
+                    String playerInput = getValidInput(randIndex, guessedWord, inputLetters, player);
 
                     if (isLetterGuessed(guessedLetters.toString(), playerInput)) {
                         cleanScreen();
@@ -56,14 +47,15 @@ public class Main {
                     if (playerInput.length() > 1) {
                         if (playerInput.equalsIgnoreCase(word)) {
                             cleanScreen();
+                            showGameInfo(randIndex, String.valueOf(inputLetters), guessedWord);
                             System.out.printf("Игрок %s победил!", player.getName());
                             player.incrementWins();
                             isGameWon = true;
                             break;
                         } else {
                             cleanScreen();
-                            System.out.printf("Игрок %s ввел неверное слово!", player.getName());
                             showGameInfo(randIndex, String.valueOf(inputLetters), guessedWord);
+                            System.out.printf("Игрок %s ввел неверное слово!", player.getName());
                             hasExtraTurn = false;
                         }
 
@@ -94,7 +86,7 @@ public class Main {
 
                     if (Arrays.equals(guessedWord, wordLetters)) {
                         cleanScreen();
-                        showGameInfo(randIndex, String.valueOf(inputLetters), guessedWord);
+                        showDecoration();
                         System.out.printf("\nИгрок %s нашел слово!", player.getName());
                         player.incrementWins();
                         isGameWon = true;
@@ -115,7 +107,7 @@ public class Main {
             if(!isGameWon && maxScore == 600){
                 cleanScreen();
                 showGameInfo(randIndex, String.valueOf(inputLetters), guessedWord);
-                System.out.printf("\nИгрок %s набрал %d очков, что является наивысшим результатом в этой игре. Теперь, другие игроки могут попытаться угадать слово. Если игрок назовет слово неправильно, он проиграет. Если же кто-то назовет слово правильно, то он станет победителем! А если никто не угадает, то победителем является %s!", playerGetMaxPoints, maxScore, playerGetMaxPoints);
+                System.out.printf("\nИгрок %s набрал %d очков, что является наивысшим результатом в этой игре. \nТеперь, другие игроки могут попытаться угадать слово. Если игрок назовет слово неправильно, он проиграет. \nЕсли же кто-то назовет слово правильно, то он станет победителем! \nА если никто не угадает, то победителем является %s!", playerGetMaxPoints, maxScore, playerGetMaxPoints);
                 for(Player player : players){
                     if(player.getPoints() == maxScore){
                         continue;
@@ -129,6 +121,8 @@ public class Main {
                         System.out.println("К сожалению, это неправильное слово.");
 
                     } else {
+                        cleanScreen();
+                        showDecoration();
                         System.out.printf("Слово угадано верно!! Игрок %s победил!", player.getName());
                         player.incrementWins();
                         isGameWon = true;
@@ -152,7 +146,6 @@ public class Main {
         System.out.println("\nСпасибо вам за игру! До свиданья!");
         displayLeaderboard(players);
     }
-
 
     public static class PlayerManager {
         public static Player[] getPlayers() {
@@ -314,6 +307,17 @@ public class Main {
         System.out.println("\n");
     }
 
+    public static String getValidInput(int randIndex, String[] guessedWord, StringBuilder inputLetters, Player player) {
+        Scanner scanner = new Scanner(System.in);
+        String playerInput = scanner.nextLine().strip().toLowerCase();
 
+        while (playerInput.isBlank() || !playerInput.matches("[а-яА-ЯёЁ]+")) {
+            cleanScreen();
+            showGameInfo(randIndex, String.valueOf(inputLetters), guessedWord);
+            System.out.printf("\nНеверный ввод. Игрок %s, попробуйте еще раз: ", player.getName());
+            playerInput = scanner.nextLine().strip().toLowerCase();
+        }
 
+        return playerInput;
+    }
 }
