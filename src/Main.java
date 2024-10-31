@@ -29,11 +29,12 @@ public class Main {
 
         boolean isGameWon = false;
         StringBuilder guessedLetters = new StringBuilder();
+        StringBuilder inputLetters = new StringBuilder();
 
 
         while (!isGameWon) {
             for (Player player : players) {
-                showRemainingLetters(String.valueOf(guessedLetters));
+                showRemainingLetters(String.valueOf(inputLetters));
                 boolean hasExtraTurn = false;
                 do {
                     System.out.printf("\nИгрок %s, введите букву или слово: ", player.getName());
@@ -80,6 +81,7 @@ public class Main {
                             System.out.println("Такой буквы нет...");
                             hasExtraTurn = false;
                         }
+                        inputLetters.append(playerInput);
 
                         showGuessProgress(guessedWord);
                     }
@@ -225,7 +227,7 @@ public class Main {
         return guessedLetters.contains(playerInput);
     }
 
-    public static void showRemainingLetters(String guessedLetters) {
+    public static void showRemainingLetters(String inputLetters) {
         String[] allLetters = {
                 "а", "б", "в", "г", "д", "е", "ё", "ж", "з", "и",
                 "й", "к", "л", "м", "н", "о", "п", "р", "с", "т",
@@ -233,12 +235,12 @@ public class Main {
                 "э", "ю", "я"
         };
         String[] remainingLetters = Arrays.stream(allLetters)
-                .filter(letter -> !guessedLetters.contains(letter))
+                .filter(letter -> !inputLetters.contains(letter))
                 .toArray(String[]::new);
 
         System.out.print("\nОставшиеся буквы: ");
         for(String letter : remainingLetters) {
-            System.out.print(letter + " ");
+            System.out.print(letter.toUpperCase() + " ");
         }
     }
 
