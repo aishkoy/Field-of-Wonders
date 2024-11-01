@@ -12,11 +12,15 @@ class Game{
     public String[] guessedWord;
     public StringBuilder guessedLetters = new StringBuilder();
     public StringBuilder inputLetters = new StringBuilder();
-    public Player[] players;
+    public static Player[] players;
     public int randIndex = getRandomInt();
+    public static String MAGENTA = "\u001B[35m";
+    public static String GREEN = "\u001B[32m";
+    public static String YELLOW = "\u001B[33m";
+    public static String RESET = "\u001B[0m";
 
     public Game(Player[] players){
-        this.players = players;
+        Game.players = players;
         this.word = getWordForRound(randIndex);
         this.wordLetters = new String[word.length()];
         for (int i = 0; i < word.length(); i++) {
@@ -172,12 +176,12 @@ class Game{
                 "Снимок на память, в истории след,\nДокумент важный и фото ответ.\nВ этой науке визуальная грань,\nВажнейший источник — источник знаний и дань."
         };
         String riddle = "Загадка: \n" + Riddles[randWord];
-        return riddle + "\n" + floor.repeat(93);
+        return riddle + (GREEN + "\n" + floor.repeat(93) + RESET);
     }
 
     public static void showDecoration(){
         cleanScreen();
-        System.out.println();
+        System.out.print(GREEN);
         for(int i = 0; i < 31; i++){
             System.out.print("===");
         }
@@ -185,19 +189,23 @@ class Game{
         for(int i = 0; i < 35; i++){
             System.out.print(" ");
         }
+        System.out.print(YELLOW);
         System.out.println("ИГРА 'ПОЛЕ ЧУДЕС'");
+        System.out.print(GREEN);
         for(int i = 0; i < 31; i++){
             System.out.print("===");
         }
-        System.out.println();
+        System.out.println(RESET);
     }
 
     public static void showGuessProgress(String[] guessedWord){
         System.out.print("\nСостояние слова:   ");
         for (String letters : guessedWord) {
-            System.out.printf("[%s]", letters);
+            System.out.printf("[%s]", letters + MAGENTA + RESET);
         }
+        System.out.print(GREEN);
         System.out.print("\n" + floor.repeat(93));
+        System.out.print(RESET);
     }
 
     public static boolean isLetterEntered(String guessedLetters, String playerInput) {
@@ -233,6 +241,7 @@ class Game{
         System.out.println(getRiddleForRound(randIndex));
         showRemainingLetters(String.valueOf(inputLetters));
         showGuessProgress(guessedWord);
+        showPoints(players);
         System.out.println("\n");
     }
 
@@ -281,5 +290,16 @@ class Game{
         for (Player player : players) {
             System.out.println(player.getName() + " - Победы: " + player.getWins() + ", Очки: " + player.getPoints());
         }
+    }
+
+    public static void showPoints(Player[] players){
+        sortPlayersByWins(players);
+        System.out.println();
+        for(Player player : players){
+            System.out.println(player.getName() + " - Очки: " + MAGENTA + player.getPoints() + RESET);
+        }
+        System.out.print(GREEN);
+        System.out.print(floor.repeat(93));
+        System.out.println(RESET);
     }
 }
