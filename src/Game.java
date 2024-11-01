@@ -6,18 +6,18 @@ import java.util.stream.Stream;
 
 class Game{
     public static final Scanner scanner = new Scanner(System.in);
-    static String floor = "_";
+    static String decorationFloor = "_";
     public String word;
     private final String[] wordLetters;
     public String[] guessedWord;
     public StringBuilder guessedLetters = new StringBuilder();
-    public StringBuilder inputLetters = new StringBuilder();
+    public StringBuilder usedLetters = new StringBuilder();
     public static Player[] players;
     public int randIndex = getRandomInt();
     public static String MAGENTA = "\u001B[35m";
     public static String GREEN = "\u001B[32m";
-    public static String YELLOW = "\u001B[33m";
-    public static String RESET = "\u001B[0m";
+    public static String RESETCOLOR = "\u001B[0m";
+    public static String RED = "\u001B[31m";
 
     public Game(Player[] players){
         Game.players = players;
@@ -35,19 +35,15 @@ class Game{
         String playerWon = "";
 
         boolean isGameWon = false;
-        showGameInfo(randIndex, inputLetters.toString(), guessedWord);
+        showGameInfo(randIndex, usedLetters.toString(), guessedWord);
 
         while (!isGameWon) {
-            AnyoneGet600:
+            AnyPlayerGet600:
             for (Player player : players) {
                 boolean hasExtraTurn = false;
                 do {
                     System.out.printf("Игрок %s, введите букву или слово: ", player.getName());
-                    String playerInput = getValidInput(randIndex, guessedWord, inputLetters, player, guessedLetters);
-
-                    if (playerInput.isBlank()) {
-                        continue;
-                    }
+                    String playerInput = getValidInput(randIndex, guessedWord, usedLetters, player, guessedLetters);
 
                     int letterLength = 1;
                     if (playerInput.length() > letterLength) {
@@ -57,7 +53,7 @@ class Game{
                             isGameWon = true;
                             break;
                         } else {
-                            showGameInfo(randIndex, inputLetters.toString(), guessedWord);
+                            showGameInfo(randIndex, usedLetters.toString(), guessedWord);
                             System.out.printf("Игрок %s ввел неверное слово!", player.getName());
                             hasExtraTurn = false;
                         }
@@ -73,14 +69,14 @@ class Game{
                             }
                         }
 
-                        inputLetters.append(playerInput);
+                        usedLetters.append(playerInput);
                         if (isLetterFound) {
                             guessedLetters.append(playerInput);
                             player.incrementPoints();
-                            showGameInfo(randIndex, inputLetters.toString(), guessedWord);
+                            showGameInfo(randIndex, usedLetters.toString(), guessedWord);
                             System.out.println("Такая буква есть!");
                         } else {
-                            showGameInfo(randIndex, inputLetters.toString(), guessedWord);
+                            showGameInfo(randIndex, usedLetters.toString(), guessedWord);
                             System.out.println("Такой буквы нет...");
                             hasExtraTurn = false;
                         }
@@ -97,7 +93,7 @@ class Game{
                     if (player.getPoints() == 600 && players.length > 1) {
                         playerGetMaxPoints = player.getName();
                         maxScore = player.getPoints();
-                        break AnyoneGet600;
+                        break AnyPlayerGet600;
                     }
 
                 } while (hasExtraTurn);
@@ -106,7 +102,7 @@ class Game{
             }
 
             if(!isGameWon && maxScore == 600){
-                showGameInfo(randIndex, inputLetters.toString(), guessedWord);
+                showGameInfo(randIndex, usedLetters.toString(), guessedWord);
                 System.out.printf("""
                         Игрок %s набрал %d очков, что является наивысшим результатом в этой игре. \
                         Теперь, другие игроки могут попытаться угадать слово. Если игрок назовет слово неправильно, он проиграет. \
@@ -176,7 +172,7 @@ class Game{
                 "Снимок на память, в истории след,\nДокумент важный и фото ответ.\nВ этой науке визуальная грань,\nВажнейший источник — источник знаний и дань."
         };
         String riddle = "Загадка: \n" + Riddles[randWord];
-        return riddle + (GREEN + "\n" + floor.repeat(93) + RESET);
+        return riddle + (GREEN + "\n" + decorationFloor.repeat(93) + RESETCOLOR);
     }
 
     public static void showDecoration(){
@@ -189,23 +185,23 @@ class Game{
         for(int i = 0; i < 35; i++){
             System.out.print(" ");
         }
-        System.out.print(YELLOW);
+        System.out.print(RED);
         System.out.println("ИГРА 'ПОЛЕ ЧУДЕС'");
         System.out.print(GREEN);
         for(int i = 0; i < 31; i++){
             System.out.print("===");
         }
-        System.out.println(RESET);
+        System.out.println(RESETCOLOR);
     }
 
     public static void showGuessProgress(String[] guessedWord){
         System.out.print("\nСостояние слова:   ");
         for (String letters : guessedWord) {
-            System.out.printf("[%s]", letters + MAGENTA + RESET);
+            System.out.print("[" + MAGENTA + letters+ RESETCOLOR + "]");
         }
         System.out.print(GREEN);
-        System.out.print("\n" + floor.repeat(93));
-        System.out.print(RESET);
+        System.out.print("\n" + decorationFloor.repeat(93));
+        System.out.print(RESETCOLOR);
     }
 
     public static boolean isLetterEntered(String guessedLetters, String playerInput) {
@@ -296,10 +292,10 @@ class Game{
         sortPlayersByWins(players);
         System.out.println();
         for(Player player : players){
-            System.out.println(player.getName() + " - Очки: " + MAGENTA + player.getPoints() + RESET);
+            System.out.println(player.getName() + " - Очки: " + MAGENTA + player.getPoints() + RESETCOLOR);
         }
         System.out.print(GREEN);
-        System.out.print(floor.repeat(93));
-        System.out.println(RESET);
+        System.out.print(decorationFloor.repeat(93));
+        System.out.println(RESETCOLOR);
     }
 }
